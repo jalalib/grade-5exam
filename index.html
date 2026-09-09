@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الاختبار التشخيصي القبلي - المهارات الرقمية</title>
+<style>
+  :root{
+    --bg:#F7F3EC; --card:#FFFFFF; --ink:#233238; --ink-soft:#5B6B70;
+    --teal:#2C6E75; --teal-dark:#1E4F55; --coral:#E8794A;
+    --green:#3F8F5F; --rose:#C94F4F; --line:#E4DDD0;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI","Tahoma","Cairo",Arial,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:28px 16px 60px;}
+  .wrap{width:100%;max-width:760px;}
+  .brand{text-align:center;margin-bottom:22px;}
+  .brand .badge{display:inline-block;background:var(--teal);color:#fff;font-size:13px;padding:5px 14px;border-radius:20px;margin-bottom:10px;}
+  .brand h1{font-size:22px;margin:0 0 4px;color:var(--teal-dark);}
+  .brand p{margin:0;color:var(--ink-soft);font-size:14px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:26px;box-shadow:0 2px 14px rgba(30,79,85,0.06);}
+  #startScreen label{display:block;font-size:15px;margin-bottom:8px;}
+  #startScreen input, #startScreen select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;font-family:inherit;margin-bottom:18px;background:#fff;}
+  #startScreen input:focus, #startScreen select:focus{outline:none;border-color:var(--teal);}
+  .btn{display:inline-block;width:100%;background:var(--teal);color:#fff;border:none;padding:14px;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s ease;}
+  .btn:hover{background:var(--teal-dark);}
+  .btn:disabled{background:#B9C3C4;cursor:not-allowed;}
+  .hint{font-size:12.5px;color:var(--ink-soft);margin-top:14px;text-align:center;}
+  .progress-track{height:8px;background:#EDE7DA;border-radius:6px;overflow:hidden;margin-bottom:22px;}
+  .progress-fill{height:100%;background:var(--coral);width:0%;transition:width .25s ease;}
+  .progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--ink-soft);margin-bottom:8px;}
+  .qblock{border-bottom:1px solid var(--line);padding:20px 0;}
+  .qblock:first-child{padding-top:0;}
+  .qblock:last-child{border-bottom:none;padding-bottom:6px;}
+  .qnum{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;background:var(--teal);color:#fff;border-radius:50%;font-size:13px;font-weight:700;margin-left:8px;}
+  .qtext{font-size:16px;font-weight:600;line-height:1.6;display:inline;}
+  .options{margin-top:14px;display:flex;flex-direction:column;gap:9px;}
+  .opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;font-size:15px;transition:border-color .12s ease, background .12s ease;}
+  .opt:hover{border-color:var(--teal);}
+  .opt input{accent-color:var(--teal);width:17px;height:17px;flex-shrink:0;}
+  .opt.selected{border-color:var(--teal);background:#EEF5F4;}
+  .score-hero{text-align:center;padding:10px 0 22px;}
+  .score-num{font-size:52px;font-weight:800;color:var(--teal-dark);line-height:1;}
+  .score-sub{color:var(--ink-soft);font-size:14px;margin-top:6px;}
+  .domain{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+  .domain-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:14.5px;font-weight:700;}
+  .domain-bar{height:8px;background:#EDE7DA;border-radius:6px;overflow:hidden;}
+  .domain-fill{height:100%;border-radius:6px;}
+  .review{display:flex;gap:8px;align-items:flex-start;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;}
+  .review:last-child{border-bottom:none;}
+  .tag{flex-shrink:0;font-size:12px;font-weight:700;padding:2px 9px;border-radius:20px;margin-top:2px;}
+  .tag.ok{background:#E6F3EA;color:var(--green);}
+  .tag.bad{background:#FBEAEA;color:var(--rose);}
+  .review-body{flex:1;}
+  .review-answer{color:var(--ink-soft);font-size:13px;margin-top:3px;}
+  .footer-link{text-align:center;margin-top:26px;}
+  .footer-link button{background:none;border:none;color:#C8C0B0;font-size:11.5px;cursor:pointer;font-family:inherit;}
+  .footer-link button:hover{color:var(--ink-soft);}
+  .hidden{display:none !important;}
+  .loading{text-align:center;color:var(--ink-soft);font-size:14px;padding:20px 0;}
+  .empty{color:var(--ink-soft);font-size:14px;text-align:center;padding:20px 0;}
+  #teacherLogin input{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;font-size:16px;font-family:inherit;margin-bottom:14px;text-align:center;}
+  .error-msg{color:var(--rose);font-size:13px;text-align:center;margin-bottom:12px;}
+  .table-scroll{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch;margin-bottom:8px;}
+  table{width:100%;min-width:520px;border-collapse:collapse;font-size:13.5px;}
+  th, td{text-align:right;padding:9px 6px;border-bottom:1px solid var(--line);}
+  th{color:var(--ink-soft);font-weight:600;}
+  .section-title{font-size:16px;font-weight:700;margin:26px 0 12px;color:var(--teal-dark);}
+  .stat-cards{display:flex;gap:10px;margin-bottom:6px;flex-wrap:wrap;}
+  .stat-card{flex:1;min-width:120px;background:#F7F3EC;border-radius:10px;padding:14px;text-align:center;}
+  .stat-card .num{font-size:24px;font-weight:800;color:var(--teal-dark);}
+  .stat-card .lbl{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .plan-card{border:1.5px solid var(--coral);background:#FDF3EC;border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+  .plan-card h4{margin:0 0 8px;font-size:15px;color:#B85A2E;}
+  .plan-card ul{margin:0;padding-inline-start:20px;font-size:14px;line-height:1.8;}
+  .weak-q{background:#FBEAEA;border-radius:10px;padding:10px 14px;margin-bottom:8px;font-size:13.5px;}
+  .weak-q b{color:var(--rose);}
+  .top-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+  .top-actions button{background:none;border:none;color:var(--ink-soft);font-size:13px;cursor:pointer;text-decoration:underline;font-family:inherit;}
+  .class-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+  .class-tab{padding:8px 16px;border-radius:20px;border:1.5px solid var(--line);background:#fff;font-size:13.5px;cursor:pointer;font-family:inherit;}
+  .class-tab.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .chart-card{border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;background:#fff;}
+  .chart-card h4{margin:0 0 4px;font-size:14.5px;}
+  .chart-card p{margin:0 0 14px;font-size:12.5px;color:var(--ink-soft);}
+  .chart-wrap{position:relative;width:100%;}
+  .dl-btn{margin-top:12px;background:transparent;border:1.5px solid var(--teal);color:var(--teal);padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;}
+  .dl-btn:hover{background:#EEF5F4;}
+  .legend-mini{display:flex;gap:14px;font-size:12px;color:var(--ink-soft);margin-bottom:10px;}
+  .legend-mini span{display:inline-flex;align-items:center;gap:5px;}
+  .legend-dot{width:10px;height:10px;border-radius:3px;display:inline-block;}
+  .mastery-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;}
+  .mastery-box{border-radius:10px;padding:12px;font-size:13px;}
+  .mastery-box.green{background:#E6F3EA;}
+  .mastery-box.yellow{background:#FDF3DD;}
+  .mastery-box.red{background:#FBEAEA;}
+  .mastery-box .m-count{font-size:22px;font-weight:800;}
+  .mastery-box.green .m-count{color:var(--green);}
+  .mastery-box.yellow .m-count{color:#B8860B;}
+  .mastery-box.red .m-count{color:var(--rose);}
+  .mastery-box .m-lbl{font-size:11.5px;color:var(--ink-soft);margin-bottom:4px;}
+  .mastery-names{font-size:11.5px;color:var(--ink-soft);margin-top:6px;line-height:1.6;}
+  .print-btn{background:var(--coral);color:#fff;border:none;padding:10px 18px;border-radius:9px;font-size:13.5px;cursor:pointer;font-family:inherit;font-weight:600;}
+  .print-btn:hover{opacity:0.92;}
+  .report-header{display:none;}
+  @media print{
+    body{padding:0;background:#fff;}
+    .top-actions, .class-tabs, .dl-btn, .print-btn, .footer-link{display:none !important;}
+    .card{box-shadow:none;border:none;padding:0;}
+    .brand{display:none;}
+    .report-header{display:block;text-align:center;margin-bottom:20px;border-bottom:2px solid #2C6E75;padding-bottom:14px;}
+    .report-header h1{font-size:20px;margin:0 0 4px;color:#1E4F55;}
+    .report-header p{margin:2px 0;font-size:13px;color:#5B6B70;}
+    .chart-card, .plan-card, .domain{break-inside:avoid;}
+    .section-title{break-after:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <span class="badge">اختبار تشخيصي قبلي</span>
+    <h1>المهارات الرقمية - الصف الخامس الابتدائي</h1>
+    <p>الفصل الدراسي الأول</p>
+  </div>
+
+  <div class="card">
+
+    <div id="startScreen">
+      <label for="studentName">اكتبي اسمك:</label>
+      <input type="text" id="studentName" placeholder="مثال: سارة أحمد">
+      <label for="studentClass">اختاري فصلك:</label>
+      <select id="studentClass">
+        <option value="">-- اختاري الفصل --</option>
+        <option value="خامس-1">خامس - 1</option>
+        <option value="خامس-2">خامس - 2</option>
+        <option value="خامس-3">خامس - 3</option>
+      </select>
+      <button class="btn" id="beginBtn">ابدئي الاختبار</button>
+      <p class="hint" id="questionCountHint">20 سؤال - اختاري إجابة واحدة لكل سؤال ثم اضغطي إرسال</p>
+      <div class="footer-link"><button id="showTeacherLogin">دخول المعلمة</button></div>
+    </div>
+
+    <div id="quizScreen" class="hidden">
+      <div class="progress-label">
+        <span id="progressText">0 من 15</span>
+        <span>التقدم</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="questionsContainer"></div>
+      <button class="btn" id="submitBtn" disabled>إرسال الإجابات</button>
+    </div>
+
+    <div id="resultScreen" class="hidden">
+      <div class="score-hero">
+        <div class="score-num" id="scoreNum">0/15</div>
+        <div class="score-sub" id="scoreSub"></div>
+        <button id="backupDownloadBtn" style="margin-top:10px;background:none;border:1.5px solid var(--line);color:var(--ink-soft);padding:7px 16px;border-radius:8px;font-size:12.5px;cursor:pointer;font-family:inherit;">⬇️ تحميل نسخة احتياطية من نتيجتي</button>
+      </div>
+      <div id="domainsContainer"></div>
+      <h3 style="font-size:15px;margin:22px 0 6px;">مراجعة إجاباتك</h3>
+      <div id="reviewContainer"></div>
+    </div>
+
+    <div id="teacherLogin" class="hidden">
+      <p style="text-align:center;font-size:15px;margin-bottom:14px;">لوحة المعلمة</p>
+      <input type="password" id="teacherPass" placeholder="كلمة المرور">
+      <div id="loginError" class="error-msg hidden">كلمة المرور غير صحيحة</div>
+      <button class="btn" id="teacherLoginBtn">دخول</button>
+      <div class="footer-link"><button id="backToStart">رجوع</button></div>
+    </div>
+
+    <div id="teacherDash" class="hidden"></div>
+
+  </div>
+</div>
+
+<script>
+const TEACHER_PASSWORD = "1449";
+const SHEETS_API_URL = "https://script.google.com/macros/s/AKfycbySYdgRyCQNuZ3vg4-WkDSHglB1BkZWMAZ2eJ_LzOEm23jsq_aH5qMyYagF8J1Lz7MuZw/exec";
+const CLASSES = ["خامس-1", "خامس-2", "خامس-3"];
+
+const DOMAINS = {
+  s1_basics: "تعلم الأساسيات (ف1)",
+  s1_text: "العمل على النص (ف1)",
+  s1_internet: "عالمي المتصل (ف1)",
+  s1_scratch: "البرمجة بسكراتش (ف1)",
+  s2_presentation: "العرض التقديمي (ف2)",
+  s2_numbers: "العمل على الأرقام (ف2)",
+  s2_media: "الوسائط المتعددة (ف2)",
+  s2_robotics: "مقدمة في الروبوت (ف2)"
+};
+
+const DOMAIN_COLORS = {
+  s1_basics: "#2C6E75",
+  s1_text: "#4C7BA6",
+  s1_internet: "#C94F4F",
+  s1_scratch: "#7B5EA7",
+  s2_presentation: "#D9A441",
+  s2_numbers: "#3F8F5F",
+  s2_media: "#E8794A",
+  s2_robotics: "#5B6B70"
+};
+
+const REMEDIAL_LIBRARY = {
+  s1_basics: {
+    goal: "تعزيز التعرف على مكونات الحاسب الأساسية وسطح المكتب وإعدادات الجهاز",
+    activities: [
+      "جولة عملية على قطع الحاسب الحقيقية داخل الفصل مع تسمية كل قطعة",
+      "تدريب مباشر على تغيير إعداد بسيط من لوحة الإعدادات (الخلفية أو الوقت)",
+      "نشاط تصنيف بطاقات مصورة لعناصر سطح المكتب"
+    ]
+  },
+  s1_text: {
+    goal: "تقوية مهارات الكتابة والتنسيق باستخدام لوحة المفاتيح ومعالج النصوص",
+    activities: [
+      "تمرين مباشر على فتح Word وتنسيق كلمة (خط عريض/تسطير) وحفظ المستند",
+      "تدريب على استخدام مفتاح Enter لبدء فقرة جديدة وTab للمسافة البادئة",
+      "نسخ فقرة قصيرة وتنسيقها (حجم الخط، المحاذاة)"
+    ]
+  },
+  s1_internet: {
+    goal: "بناء وعي بالتصفح الآمن والبحث الموثوق عن المعلومات",
+    activities: [
+      "نقاش صفي بسيناريوهات واقعية عن طلب معلومات شخصية من شخص غريب",
+      "تمرين بحث موجّه عن معلومة والتأكد من مصداقية المصدر",
+      "ورشة قصيرة عن الفرق بين الموقع الموثوق وغير الموثوق"
+    ]
+  },
+  s1_scratch: {
+    goal: "ترسيخ أساسيات البرمجة المرئية بواسطة سكراتش (الكائنات، اللبنات، التكرار)",
+    activities: [
+      "تمرين عملي بسيط: تحريك كائن (Sprite) بضع خطوات باستخدام لبنة الحركة",
+      "بناء برنامج قصير فيه تكرار (Loop) لرسم شكل بسيط",
+      "لعبة تعرّف على اللبنات البرمجية الأساسية (حركة، مظهر، صوت، تحكم)"
+    ]
+  },
+  s2_presentation: {
+    goal: "تطوير مهارة إنشاء عرض تقديمي بسيط ومنظم",
+    activities: [
+      "تدريب على إنشاء شريحة جديدة وإضافة عنوان ونص",
+      "تمرين على إدراج صورة داخل الشريحة وترتيب العناصر",
+      "عرض نموذجي قصير يقارن بين شريحة منظمة وأخرى غير منظمة"
+    ]
+  },
+  s2_numbers: {
+    goal: "تعزيز فهم أساسيات العمل على البيانات الرقمية والجداول",
+    activities: [
+      "تدريب على إدخال أرقام بسيطة في خلايا وحساب مجموعها",
+      "تمرين على التعرف على الصف والعمود والخلية داخل الجدول",
+      "نشاط تلوين خلايا حسب قيمة بسيطة (تمييز بصري)"
+    ]
+  },
+  s2_media: {
+    goal: "توضيح مفهوم الوسائط المتعددة وكيفية التعامل معها",
+    activities: [
+      "عرض أمثلة على أنواع الوسائط (صوت، صورة، فيديو) ومناقشة الفرق بينها",
+      "تدريب على تشغيل مقطع صوتي أو فيديو قصير بمشغل الوسائط",
+      "نشاط دمج صورة وتسمية توضيحية في ملف بسيط"
+    ]
+  },
+  s2_robotics: {
+    goal: "تقديم مفاهيم أساسية عن الروبوت ووظائفه",
+    activities: [
+      "نقاش مصور عن أمثلة روبوتات نستخدمها في الحياة اليومية",
+      "نشاط تعرّف على وظيفة المستشعر مقارنة بالمحرك",
+      "لعبة \"كن أنت الروبوت\": تنفيذ أوامر بسيطة متسلسلة يعطيها زميل"
+    ]
+  }
+};
+
+const QUESTIONS = [
+  { q:"أي من الأجهزة التالية يعد جهاز حاسب؟", opts:["الحاسب المحمول","الكتاب","القلم","المسطرة"], correct:0, domain:"s1_basics" },
+  { q:"الشاشة الرئيسية التي تظهر عند تشغيل الحاسب وتحتوي على الأيقونات تسمى:", opts:["سطح المكتب","المتصفح","المجلد","لوحة المفاتيح"], correct:0, domain:"s1_basics" },
+  { q:"لتغيير إعدادات الحاسب مثل الخلفية أو الوقت نستخدم:", opts:["الإعدادات","الآلة الحاسبة","المستكشف","سلة المحذوفات"], correct:0, domain:"s1_basics" },
+
+  { q:"عند الانتهاء من كتابة مستند مهم، من الأفضل:", opts:["حفظه","إغلاقه دون حفظ","حذف النص","إيقاف الشاشة فقط"], correct:0, domain:"s1_text" },
+  { q:"لجعل كلمة في المستند بخط عريض نستخدم أمر:", opts:["Bold (خط عريض)","حذف","طباعة","تصغير الشاشة"], correct:0, domain:"s1_text" },
+  { q:"لبدء فقرة جديدة أثناء الكتابة في المستند نضغط على:", opts:["Enter","Delete","Shift","Ctrl"], correct:0, domain:"s1_text" },
+
+  { q:"عنوان الموقع الإلكتروني الذي نكتبه في المتصفح للوصول إليه يسمى:", opts:["رابط (URL)","كلمة مرور","ملف","مجلد"], correct:0, domain:"s1_internet" },
+  { q:"عند البحث عن معلومة في الإنترنت، من المهم التأكد من:", opts:["أن المصدر موثوق","أن الموقع ملون","أن الصفحة طويلة","لا شيء مما سبق"], correct:0, domain:"s1_internet" },
+  { q:"إذا طلب منك شخص لا تعرفينه عبر الإنترنت معلوماتك الشخصية، فما التصرف الصحيح؟", opts:["إرسال المعلومات له","عدم إعطائه المعلومات وإخبار شخص بالغ موثوق","إرسال كلمة المرور","إرسال عنوان المنزل"], correct:1, domain:"s1_internet" },
+
+  { q:"في برنامج سكراتش، الشخصية أو الكائن الذي نتحكم بحركته يسمى:", opts:["الكائن (Sprite)","الخلفية","الملف","المجلد"], correct:0, domain:"s1_scratch" },
+  { q:"لتكرار مجموعة أوامر عدة مرات في سكراتش نستخدم لبنة:", opts:["التكرار (Repeat)","الانتظار","الصوت","الحفظ"], correct:0, domain:"s1_scratch" },
+  { q:"القطع الملونة التي نركّبها مع بعض لبناء برنامج في سكراتش تسمى:", opts:["اللبنات البرمجية","الملفات","الأيقونات","المجلدات"], correct:0, domain:"s1_scratch" },
+
+  { q:"البرنامج المستخدم لإنشاء عرض تقديمي بشرائح هو:", opts:["PowerPoint","Word","Excel","Paint"], correct:0, domain:"s2_presentation" },
+  { q:"كل صفحة داخل العرض التقديمي تسمى:", opts:["شريحة","ملف","عمود","صف"], correct:0, domain:"s2_presentation" },
+
+  { q:"البرنامج المستخدم لتنظيم البيانات في صفوف وأعمدة وإجراء عمليات حسابية عليها يسمى:", opts:["Excel","PowerPoint","Word","Scratch"], correct:0, domain:"s2_numbers" },
+  { q:"تقاطع الصف مع العمود في برنامج الأرقام يسمى:", opts:["خلية","شريحة","ملف","مجلد"], correct:0, domain:"s2_numbers" },
+
+  { q:"أي مما يلي يعد من أنواع الوسائط المتعددة؟", opts:["الصوت والفيديو والصور","الحاسب فقط","كلمة المرور","المجلد"], correct:0, domain:"s2_media" },
+  { q:"لتشغيل مقطع فيديو محفوظ على الحاسب نحتاج إلى:", opts:["مشغل الوسائط","محرر النصوص","الآلة الحاسبة","مشغل الأرقام"], correct:0, domain:"s2_media" },
+
+  { q:"الروبوت هو جهاز يمكن برمجته ليقوم بـ:", opts:["مهام معينة تلقائيا","التفكير كالإنسان تماما","لا شيء","الطبخ فقط"], correct:0, domain:"s2_robotics" },
+  { q:"الجزء المسؤول عن استشعار البيئة حول الروبوت (مثل اللمس أو الضوء) يسمى:", opts:["المستشعر (Sensor)","المحرك","البطارية","الشاشة"], correct:0, domain:"s2_robotics" },
+];
+
+let answers = new Array(QUESTIONS.length).fill(null);
+document.getElementById('questionCountHint').textContent = `${QUESTIONS.length} سؤال - اختاري إجابة واحدة لكل سؤال ثم اضغطي إرسال`;
+let allRecordsCache = [];
+let currentClassFilter = "all";
+
+const startScreen = document.getElementById('startScreen');
+const quizScreen = document.getElementById('quizScreen');
+const resultScreen = document.getElementById('resultScreen');
+const teacherLogin = document.getElementById('teacherLogin');
+const teacherDash = document.getElementById('teacherDash');
+const questionsContainer = document.getElementById('questionsContainer');
+const submitBtn = document.getElementById('submitBtn');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+
+function showOnly(el){
+  [startScreen, quizScreen, resultScreen, teacherLogin, teacherDash].forEach(s => s.classList.add('hidden'));
+  el.classList.remove('hidden');
+}
+
+document.getElementById('beginBtn').addEventListener('click', () => {
+  const name = document.getElementById('studentName').value.trim();
+  const cls = document.getElementById('studentClass').value;
+  let hasError = false;
+  if(!name){ document.getElementById('studentName').style.borderColor = 'var(--rose)'; hasError = true; }
+  if(!cls){ document.getElementById('studentClass').style.borderColor = 'var(--rose)'; hasError = true; }
+  if(hasError) return;
+  window.studentName = name;
+  window.studentClass = cls;
+  renderQuestions();
+  showOnly(quizScreen);
+});
+
+document.getElementById('showTeacherLogin').addEventListener('click', () => showOnly(teacherLogin));
+document.getElementById('backToStart').addEventListener('click', () => showOnly(startScreen));
+
+document.getElementById('teacherLoginBtn').addEventListener('click', async () => {
+  const val = document.getElementById('teacherPass').value;
+  if(val === TEACHER_PASSWORD){
+    document.getElementById('loginError').classList.add('hidden');
+    await loadAllRecords();
+    currentClassFilter = "all";
+    showOnly(teacherDash);
+    renderTeacherDash();
+  } else {
+    document.getElementById('loginError').classList.remove('hidden');
+  }
+});
+
+function renderQuestions(){
+  questionsContainer.innerHTML = '';
+  QUESTIONS.forEach((item, qi) => {
+    const block = document.createElement('div');
+    block.className = 'qblock';
+    block.innerHTML = `
+      <span class="qnum">${qi+1}</span><span class="qtext">${item.q}</span>
+      <div class="options" id="opts-${qi}">
+        ${item.opts.map((opt, oi) => `
+          <label class="opt" data-qi="${qi}" data-oi="${oi}">
+            <input type="radio" name="q${qi}" value="${oi}">
+            <span>${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+    `;
+    questionsContainer.appendChild(block);
+  });
+
+  document.querySelectorAll('.opt').forEach(label => {
+    label.addEventListener('click', () => {
+      const qi = parseInt(label.dataset.qi);
+      const oi = parseInt(label.dataset.oi);
+      answers[qi] = oi;
+      document.querySelectorAll(`#opts-${qi} .opt`).forEach(o => o.classList.remove('selected'));
+      label.classList.add('selected');
+      label.querySelector('input').checked = true;
+      updateProgress();
+    });
+  });
+}
+
+function updateProgress(){
+  const answered = answers.filter(a => a !== null).length;
+  progressText.textContent = `${answered} من ${QUESTIONS.length}`;
+  progressFill.style.width = (answered / QUESTIONS.length * 100) + '%';
+  submitBtn.disabled = answered !== QUESTIONS.length;
+}
+
+submitBtn.addEventListener('click', async () => {
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'جارٍ الإرسال...';
+  await finishQuiz();
+});
+
+async function saveRecordWithRetry(record, attempts){
+  attempts = attempts || 4;
+  for(let i=0; i<attempts; i++){
+    try{
+      const res = await fetch(SHEETS_API_URL, { method: 'POST', body: JSON.stringify(record) });
+      const data = await res.json();
+      if(data && data.ok){
+        record._storageKey = data.key;
+        return true;
+      }
+    }catch(e){
+      console.error('محاولة حفظ فشلت', i+1, e);
+    }
+    if(i < attempts-1) await new Promise(r => setTimeout(r, 600 * (i+1)));
+  }
+  return false;
+}
+
+window.pendingRecord = null;
+
+async function finishQuiz(){
+  let score = 0;
+  const domainStats = {};
+  Object.keys(DOMAINS).forEach(d => { domainStats[d] = {c:0,t:0}; });
+  QUESTIONS.forEach((item, qi) => {
+    domainStats[item.domain].t++;
+    if(answers[qi] === item.correct){
+      score++;
+      domainStats[item.domain].c++;
+    }
+  });
+
+  const record = {
+    name: window.studentName,
+    className: window.studentClass,
+    score, total: QUESTIONS.length,
+    domainStats,
+    answers,
+    timestamp: new Date().toISOString()
+  };
+  window.pendingRecord = record;
+
+  const saved = await saveRecordWithRetry(record);
+
+  if(saved){
+    showSaveStatus(true);
+  } else {
+    showSaveStatus(false);
+  }
+  showResults(record);
+  showOnly(resultScreen);
+}
+
+function showSaveStatus(success){
+  let banner = document.getElementById('saveStatusBanner');
+  if(!banner){
+    banner = document.createElement('div');
+    banner.id = 'saveStatusBanner';
+    banner.style.borderRadius = '10px';
+    banner.style.padding = '12px 14px';
+    banner.style.fontSize = '13.5px';
+    banner.style.marginBottom = '16px';
+    banner.style.textAlign = 'center';
+    resultScreen.insertBefore(banner, resultScreen.firstChild);
+  }
+  if(success){
+    banner.style.background = '#E6F3EA';
+    banner.style.color = 'var(--green)';
+    banner.innerHTML = '✅ تم حفظ نتيجتك بنجاح وستصل لمعلمتك';
+  } else {
+    banner.style.background = '#FBEAEA';
+    banner.style.color = 'var(--rose)';
+    banner.innerHTML = '⚠️ حدث خطأ ولم تُحفظ نتيجتك بعد. اضغطي إعادة المحاولة، وإذا استمر الخطأ حمّلي النسخة الاحتياطية بالأسفل وأرسليها لمعلمتك <br><button id="retrySaveBtn" class="btn" style="width:auto;padding:8px 20px;margin-top:10px;font-size:13.5px;">إعادة المحاولة</button>';
+    const retryBtn = document.getElementById('retrySaveBtn');
+    if(retryBtn){
+      retryBtn.addEventListener('click', async () => {
+        retryBtn.disabled = true;
+        retryBtn.textContent = 'جارٍ إعادة المحاولة...';
+        const ok = await saveRecordWithRetry(window.pendingRecord);
+        showSaveStatus(ok);
+      });
+    }
+  }
+}
+
+function downloadResultBackup(record){
+  const lines = [
+    'نسخة احتياطية - نتيجة اختبار تشخيصي',
+    '================================',
+    `الاسم: ${record.name}`,
+    `الفصل: ${record.className}`,
+    `الدرجة: ${record.score}/${record.total}`,
+    `التاريخ: ${new Date(record.timestamp).toLocaleString('ar-SA')}`,
+    '',
+    'تفصيل المهارات:',
+    ...Object.keys(DOMAINS).map(d => `- ${DOMAINS[d]}: ${record.domainStats[d].c}/${record.domainStats[d].t}`),
+    '',
+    'ملاحظة: هذا الملف نسخة احتياطية شخصية. الرجاء إرساله لمعلمتك إذا طلبت ذلك.'
+  ];
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `نتيجة_${record.name}_${record.className}.txt`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function showResults(record){
+  document.getElementById('scoreNum').textContent = `${record.score}/${record.total}`;
+  const backupBtn = document.getElementById('backupDownloadBtn');
+  if(backupBtn) backupBtn.onclick = () => downloadResultBackup(record);
+  const pct = Math.round(record.score/record.total*100);
+  let msg = 'أداء ممتاز! استمري 🎉';
+  if(pct < 50) msg = 'لا بأس، هذا اختبار تشخيصي وسيساعد معلمتك على دعمك أكثر';
+  else if(pct < 80) msg = 'أداء جيد، هناك بعض النقاط التي يمكن تحسينها';
+  document.getElementById('scoreSub').textContent = `${record.name} (${record.className}) - ${msg}`;
+
+  const domainsContainer = document.getElementById('domainsContainer');
+  domainsContainer.innerHTML = '';
+  Object.keys(DOMAINS).forEach(dKey => {
+    const st = record.domainStats[dKey];
+    const p = Math.round(st.c/st.t*100);
+    const color = p >= 80 ? 'var(--green)' : (p >= 50 ? 'var(--coral)' : 'var(--rose)');
+    const div = document.createElement('div');
+    div.className = 'domain';
+    div.innerHTML = `
+      <div class="domain-top"><span>${DOMAINS[dKey]}</span><span style="color:${color}">${st.c}/${st.t}</span></div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${p}%;background:${color}"></div></div>
+    `;
+    domainsContainer.appendChild(div);
+  });
+
+  const reviewContainer = document.getElementById('reviewContainer');
+  reviewContainer.innerHTML = '';
+  QUESTIONS.forEach((item, qi) => {
+    const isCorrect = record.answers[qi] === item.correct;
+    const div = document.createElement('div');
+    div.className = 'review';
+    div.innerHTML = `
+      <span class="tag ${isCorrect ? 'ok' : 'bad'}">${isCorrect ? 'صحيح' : 'خطأ'}</span>
+      <div class="review-body">
+        ${qi+1}. ${item.q}
+        ${isCorrect ? '' : `<div class="review-answer">إجابتك: ${item.opts[record.answers[qi]]} — الصحيحة: ${item.opts[item.correct]}</div>`}
+      </div>
+    `;
+    reviewContainer.appendChild(div);
+  });
+}
+
+async function loadAllRecords(){
+  allRecordsCache = [];
+  try{
+    const res = await fetch(SHEETS_API_URL);
+    const data = await res.json();
+    if(data && data.ok && data.records) allRecordsCache = data.records;
+  }catch(e){
+    console.error('تعذر تحميل النتائج', e);
+  }
+  allRecordsCache.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+}
+
+function computeStats(records){
+  const classCount = records.length;
+  if(classCount === 0) return null;
+  const avgScore = (records.reduce((s,r) => s + r.score, 0) / classCount).toFixed(1);
+  const domainTotals = {};
+  Object.keys(DOMAINS).forEach(d => { domainTotals[d] = {c:0,t:0}; });
+  records.forEach(r => {
+    Object.keys(DOMAINS).forEach(d => {
+      domainTotals[d].c += r.domainStats[d].c;
+      domainTotals[d].t += r.domainStats[d].t;
+    });
+  });
+  const domainPct = {};
+  Object.keys(DOMAINS).forEach(d => { domainPct[d] = Math.round(domainTotals[d].c / domainTotals[d].t * 100); });
+  const sortedDomains = Object.keys(DOMAINS).sort((a,b) => domainPct[a] - domainPct[b]);
+  const perQuestionWrong = QUESTIONS.map((q, qi) => {
+    const wrong = records.filter(r => r.answers[qi] !== q.correct).length;
+    return { qi, q: q.q, wrongPct: Math.round(wrong / classCount * 100), wrongCount: wrong };
+  }).sort((a,b) => b.wrongPct - a.wrongPct);
+
+  // مستوى التمكن لكل طالبة في كل مهارة
+  const mastery = {};
+  Object.keys(DOMAINS).forEach(d => { mastery[d] = { green: [], yellow: [], red: [] }; });
+  records.forEach(r => {
+    Object.keys(DOMAINS).forEach(d => {
+      const st = r.domainStats[d];
+      const p = st.t ? (st.c / st.t * 100) : 0;
+      if(p >= 80) mastery[d].green.push(r.name);
+      else if(p >= 50) mastery[d].yellow.push(r.name);
+      else mastery[d].red.push(r.name);
+    });
+  });
+
+  return { classCount, avgScore, domainPct, sortedDomains, perQuestionWrong, mastery };
+}
+
+function renderTeacherDash(){
+  if(allRecordsCache.length === 0){
+    teacherDash.innerHTML = `
+      <div class="top-actions"><span style="font-weight:700;font-size:16px;color:var(--teal-dark);">لوحة المعلمة</span><button id="logoutBtn">تسجيل خروج</button></div>
+      <div class="empty">لا توجد نتائج محفوظة بعد. أرسلي رابط الاختبار للطالبات أولا.</div>`;
+    document.getElementById('logoutBtn').addEventListener('click', () => showOnly(startScreen));
+    return;
+  }
+
+  const filtered = currentClassFilter === 'all' ? allRecordsCache : allRecordsCache.filter(r => r.className === currentClassFilter);
+  const stats = computeStats(filtered);
+
+  const tabsHtml = `
+    <div class="class-tabs">
+      <button class="class-tab ${currentClassFilter==='all'?'active':''}" data-cls="all">كل الفصول (${allRecordsCache.length})</button>
+      ${CLASSES.map(c => {
+        const n = allRecordsCache.filter(r => r.className === c).length;
+        return `<button class="class-tab ${currentClassFilter===c?'active':''}" data-cls="${c}">${c} (${n})</button>`;
+      }).join('')}
+    </div>
+  `;
+
+  if(!stats){
+    teacherDash.innerHTML = `
+      <div class="top-actions"><span style="font-weight:700;font-size:16px;color:var(--teal-dark);">لوحة المعلمة</span><button id="logoutBtn">تسجيل خروج</button></div>
+      ${tabsHtml}
+      <div class="empty">لا توجد نتائج لهذا الفصل بعد</div>`;
+    bindTeacherEvents();
+    return;
+  }
+
+  const weakest = stats.sortedDomains[0];
+  const secondWeakest = stats.sortedDomains[1];
+  const topWeakQuestions = stats.perQuestionWrong.filter(w => w.wrongPct > 0).slice(0, 5);
+
+  let tableRows = filtered.map(r => {
+    const weakestForStudent = Object.keys(DOMAINS).reduce((worst, d) => {
+      const p = r.domainStats[d].t ? r.domainStats[d].c / r.domainStats[d].t : 1;
+      const wp = r.domainStats[worst].t ? r.domainStats[worst].c / r.domainStats[worst].t : 1;
+      return p < wp ? d : worst;
+    }, Object.keys(DOMAINS)[0]);
+    const wd = r.domainStats[weakestForStudent];
+    const wPct = wd.t ? Math.round(wd.c/wd.t*100) : 0;
+    return `
+    <tr>
+      <td><button class="delete-row-btn" data-key="${r._storageKey || ''}" style="background:#FBEAEA;border:1px solid var(--rose);color:var(--rose);cursor:pointer;font-size:14px;border-radius:6px;padding:5px 10px;white-space:nowrap;">🗑️ حذف</button></td>
+      <td>${r.name}</td>
+      <td>${r.className}</td>
+      <td>${r.score}/${r.total}</td>
+      <td>${DOMAINS[weakestForStudent]} (${wPct}%)</td>
+    </tr>
+  `;
+  }).join('');
+
+  let planCards = [weakest, secondWeakest].map((d, i) => `
+    <div class="plan-card">
+      <h4>${i===0 ? '🔴 الأولوية الأولى' : '🟠 الأولوية الثانية'} — ${DOMAINS[d]} (${stats.domainPct[d]}% إتقان)</h4>
+      <p style="margin:0 0 8px;font-size:13.5px;color:var(--ink-soft);">${REMEDIAL_LIBRARY[d].goal}</p>
+      <ul>${REMEDIAL_LIBRARY[d].activities.map(a => `<li>${a}</li>`).join('')}</ul>
+    </div>
+  `).join('');
+
+  let weakQuestionsHtml = topWeakQuestions.length ? topWeakQuestions.map(w => `
+    <div class="weak-q">سؤال ${w.qi+1}: ${w.q} — <b>${w.wrongPct}%</b> أخطأن فيه (${w.wrongCount} من ${stats.classCount})</div>
+  `).join('') : '<div class="empty">لا يوجد أسئلة ذات نسبة خطأ ملحوظة</div>';
+
+  const scopeLabel = currentClassFilter === 'all' ? 'كل الفصول' : currentClassFilter;
+
+  let masteryHtml = Object.keys(DOMAINS).map(d => {
+    const m = stats.mastery[d];
+    return `
+      <div style="margin-bottom:18px;">
+        <div style="font-size:14px;font-weight:700;margin-bottom:8px;">${DOMAINS[d]}</div>
+        <div class="mastery-row">
+          <div class="mastery-box green">
+            <div class="m-lbl">🟢 متمكنات (80%+)</div>
+            <div class="m-count">${m.green.length}</div>
+            <div class="mastery-names">${m.green.join('، ') || '—'}</div>
+          </div>
+          <div class="mastery-box yellow">
+            <div class="m-lbl">🟡 متوسط (50-79%)</div>
+            <div class="m-count">${m.yellow.length}</div>
+            <div class="mastery-names">${m.yellow.join('، ') || '—'}</div>
+          </div>
+          <div class="mastery-box red">
+            <div class="m-lbl">🔴 تحتاج دعم (أقل من 50%)</div>
+            <div class="m-count">${m.red.length}</div>
+            <div class="mastery-names">${m.red.join('، ') || '—'}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  teacherDash.innerHTML = `
+    <div class="report-header">
+      <h1>تقرير الاختبار التشخيصي القبلي - المهارات الرقمية</h1>
+      <p>الصف الخامس الابتدائي - الفصل الدراسي الأول 1448-1449 هـ</p>
+      <p>النطاق: ${scopeLabel} — تاريخ التقرير: ${new Date().toLocaleDateString('ar-SA')}</p>
+    </div>
+
+    <div class="top-actions">
+      <span style="font-weight:700;font-size:16px;color:var(--teal-dark);">لوحة المعلمة${currentClassFilter!=='all' ? ' — '+currentClassFilter : ''}</span>
+      <div style="display:flex;gap:14px;align-items:center;">
+        <button class="print-btn" id="refreshBtn" style="background:var(--teal);">🔄 تحديث النتائج</button>
+        <button class="print-btn" id="deleteAllBtn" style="background:var(--rose);">🗑️ حذف كل النتائج</button>
+        <button class="print-btn" id="printBtn">🖨️ طباعة / تصدير PDF</button>
+        <button id="logoutBtn">تسجيل خروج</button>
+      </div>
+    </div>
+    ${tabsHtml}
+    <div class="stat-cards">
+      <div class="stat-card"><div class="num">${stats.classCount}</div><div class="lbl">عدد الطالبات</div></div>
+      <div class="stat-card"><div class="num">${stats.avgScore}/${QUESTIONS.length}</div><div class="lbl">متوسط الأداء</div></div>
+      <div class="stat-card"><div class="num">${stats.domainPct[weakest]}%</div><div class="lbl">أضعف مهارة: ${DOMAINS[weakest]}</div></div>
+    </div>
+
+    <div class="section-title">نظرة شاملة: التمكن مقابل الضعف في كل المهارات معاً</div>
+    <div class="chart-card">
+      <p>كل عمود يمثل مهارة، ويوضح توزيع الطالبات بين متمكنة (أخضر) ومتوسطة (أصفر) وتحتاج دعم (أحمر) — بحيث تقارنين كل المهارات ببعض بنظرة وحدة</p>
+      <div class="legend-mini">
+        <span><i class="legend-dot" style="background:#3F8F5F"></i> متمكنة (80%+)</span>
+        <span><i class="legend-dot" style="background:#D9A441"></i> متوسط (50-79%)</span>
+        <span><i class="legend-dot" style="background:#C94F4F"></i> تحتاج دعم (أقل من 50%)</span>
+      </div>
+      <div class="chart-wrap" id="masterySummaryChart"></div>
+      <button class="dl-btn" id="dlMasteryChart">تنزيل الرسمة كصورة</button>
+    </div>
+
+    <div class="section-title">الإتقان حسب المهارة (متوسط الفصل)</div>
+    <div id="classDomains"></div>
+
+    <div class="section-title">مستوى التمكن الفردي لكل طالبة</div>
+    ${masteryHtml}
+
+    <div class="section-title">درجات الطالبات</div>
+    <div class="table-scroll">
+    <table><thead><tr><th>حذف</th><th>الاسم</th><th>الفصل</th><th>الدرجة</th><th>أضعف مهارة للطالبة</th></tr></thead>
+    <tbody>${tableRows}</tbody></table>
+    </div>
+    <p style="font-size:11.5px;color:var(--ink-soft);margin-top:-2px;">↔️ مرري إصبعك يمين/يسار على الجدول لو ما يظهر عمود الحذف كامل</p>
+
+    <div class="section-title">الأسئلة الأكثر خطأً (ترتيب تنازلي)</div>
+    ${weakQuestionsHtml}
+
+    <div class="section-title">خطة علاجية مقترحة</div>
+    ${planCards}
+
+    <div class="section-title">تحليل إضافي (رسومات بيانية)</div>
+
+    <div class="chart-card">
+      <h4>أضعف الأسئلة مرتبطة بالمهارة</h4>
+      <p>أكثر 6 أسئلة خطأً، مرتبة من الأسوأ للأفضل، ولون كل عمود يدل على المهارة التي ينتمي لها السؤال</p>
+      <div class="legend-mini" id="questionsLegend"></div>
+      <div class="chart-wrap" id="questionsChart"></div>
+      <button class="dl-btn" id="dlQuestionsChart">تنزيل الرسمة كصورة</button>
+    </div>
+
+    <div class="chart-card">
+      <h4>توزيع درجات الطالبات</h4>
+      <p>عدد الطالبات حسب مجموع الدرجات من ${QUESTIONS.length}</p>
+      <div class="chart-wrap" id="scoreDistChart"></div>
+      <button class="dl-btn" id="dlScoreChart">تنزيل الرسمة كصورة</button>
+    </div>
+  `;
+
+  const questionsLegend = document.getElementById('questionsLegend');
+  questionsLegend.innerHTML = Object.keys(DOMAINS).map(d =>
+    `<span><i class="legend-dot" style="background:${DOMAIN_COLORS[d]}"></i> ${DOMAINS[d]}</span>`
+  ).join('');
+
+  const classDomains = document.getElementById('classDomains');
+  Object.keys(DOMAINS).forEach(dKey => {
+    const p = stats.domainPct[dKey];
+    const color = p >= 80 ? 'var(--green)' : (p >= 50 ? 'var(--coral)' : 'var(--rose)');
+    const div = document.createElement('div');
+    div.className = 'domain';
+    div.innerHTML = `
+      <div class="domain-top"><span>${DOMAINS[dKey]}</span><span style="color:${color}">${p}%</span></div>
+      <div class="domain-bar"><div class="domain-fill" style="width:${p}%;background:${color}"></div></div>
+    `;
+    classDomains.appendChild(div);
+  });
+
+  bindTeacherEvents();
+  requestAnimationFrame(() => renderCharts(filtered, stats));
+}
+
+function svgToPngDownload(svgEl, filename, bgColor){
+  const serializer = new XMLSerializer();
+  let svgStr = serializer.serializeToString(svgEl);
+  const svgBlob = new Blob([svgStr], {type:'image/svg+xml;charset=utf-8'});
+  const url = URL.createObjectURL(svgBlob);
+  const img = new Image();
+  img.onload = function(){
+    const scale = 2;
+    const w = svgEl.viewBox.baseVal.width || svgEl.clientWidth;
+    const h = svgEl.viewBox.baseVal.height || svgEl.clientHeight;
+    const canvas = document.createElement('canvas');
+    canvas.width = w * scale;
+    canvas.height = h * scale;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = bgColor || '#ffffff';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0, w, h);
+    URL.revokeObjectURL(url);
+    const link = document.createElement('a');
+    link.download = filename + '.png';
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+  };
+  img.src = url;
+}
+
+function buildQuestionsChartSVG(filtered){
+  const total = filtered.length || 1;
+  const withStats = QUESTIONS.map((q, qi) => {
+    const wrong = filtered.filter(r => r.answers[qi] !== q.correct).length;
+    return { qi, domain: q.domain, wrong, wrongPct: Math.round(wrong/total*100) };
+  }).filter(w => w.wrong > 0).sort((a,b) => b.wrongPct - a.wrongPct).slice(0, 6);
+
+  if(withStats.length === 0){
+    return `<div class="empty">لا توجد أخطاء ملحوظة — أداء ممتاز لكل الأسئلة 🎉</div>`;
+  }
+
+  const n = withStats.length;
+  const rowH = 34, gap = 10, leftPad = 46, rightPad = 66, topPad = 10, chartW = 560;
+  const usableW = chartW - leftPad - rightPad;
+  const svgH = topPad*2 + n*(rowH+gap);
+  let bars = '';
+  withStats.forEach((w, idx) => {
+    const y = topPad + idx*(rowH+gap);
+    const barW = (w.wrongPct/100)*usableW;
+    const color = DOMAIN_COLORS[w.domain];
+    bars += `<text x="${leftPad-8}" y="${y+rowH/2+5}" text-anchor="end" font-size="13" fill="#5B6B70">س${w.qi+1}</text>`;
+    bars += `<rect x="${leftPad}" y="${y}" width="${usableW}" height="${rowH}" rx="4" fill="#F1ECE3"></rect>`;
+    bars += `<rect x="${leftPad}" y="${y}" width="${barW}" height="${rowH}" rx="4" fill="${color}"></rect>`;
+    bars += `<text x="${leftPad+usableW+8}" y="${y+rowH/2+5}" font-size="12.5" font-weight="600" fill="#233238">${w.wrongPct}%</text>`;
+  });
+  return `<svg viewBox="0 0 ${chartW} ${svgH}" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:${chartW}px;font-family:Segoe UI,Tahoma,Arial,sans-serif;">
+    <rect x="0" y="0" width="${chartW}" height="${svgH}" fill="#ffffff"/>
+    ${bars}
+  </svg>`;
+}
+
+function buildScoreDistSVG(filtered){
+  const maxScore = QUESTIONS.length;
+  const nBuckets = maxScore + 1;
+  const buckets = new Array(nBuckets).fill(0);
+  filtered.forEach(r => buckets[r.score]++);
+  const maxCount = Math.max(1, ...buckets);
+  const chartW = 620, chartH = 220, leftPad = 34, bottomPad = 26, topPad = 14, rightPad = 10;
+  const usableW = chartW - leftPad - rightPad;
+  const usableH = chartH - topPad - bottomPad;
+  const barW = usableW / nBuckets * 0.7;
+  const gapW = usableW / nBuckets;
+  let bars = '';
+  buckets.forEach((count, score) => {
+    const h = maxCount ? (count/maxCount)*usableH : 0;
+    const x = leftPad + score*gapW + (gapW-barW)/2;
+    const y = topPad + usableH - h;
+    bars += `<rect x="${x}" y="${y}" width="${barW}" height="${h}" rx="3" fill="#2C6E75"></rect>`;
+    if(count>0) bars += `<text x="${x+barW/2}" y="${y-4}" text-anchor="middle" font-size="10" fill="#233238">${count}</text>`;
+    bars += `<text x="${x+barW/2}" y="${chartH-8}" text-anchor="middle" font-size="9.5" fill="#5B6B70">${score}</text>`;
+  });
+  bars += `<line x1="${leftPad}" y1="${topPad+usableH}" x2="${chartW-rightPad}" y2="${topPad+usableH}" stroke="#E4DDD0" stroke-width="1"/>`;
+  return `<svg viewBox="0 0 ${chartW} ${chartH}" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:${chartW}px;font-family:Segoe UI,Tahoma,Arial,sans-serif;">
+    <rect x="0" y="0" width="${chartW}" height="${chartH}" fill="#ffffff"/>
+    ${bars}
+  </svg>`;
+}
+
+function buildMasterySummarySVG(stats, totalStudents){
+  const domainKeys = Object.keys(DOMAINS);
+  const n = domainKeys.length;
+  const rowH = 30, gap = 12, leftPad = 130, rightPad = 20, topPad = 10, chartW = 620;
+  const usableW = chartW - leftPad - rightPad;
+  const svgH = topPad*2 + n*(rowH+gap);
+  const total = totalStudents || 1;
+  let bars = '';
+  domainKeys.forEach((d, idx) => {
+    const m = stats.mastery[d];
+    const y = topPad + idx*(rowH+gap);
+    let x = leftPad;
+    const segs = [
+      { count: m.green.length, color:'#3F8F5F' },
+      { count: m.yellow.length, color:'#D9A441' },
+      { count: m.red.length, color:'#C94F4F' }
+    ];
+    segs.forEach(seg => {
+      const w = (seg.count/total)*usableW;
+      if(w > 0){
+        bars += `<rect x="${x}" y="${y}" width="${w}" height="${rowH}" fill="${seg.color}"></rect>`;
+        if(w > 20) bars += `<text x="${x+w/2}" y="${y+rowH/2+5}" text-anchor="middle" font-size="11.5" font-weight="600" fill="#ffffff">${seg.count}</text>`;
+      }
+      x += w;
+    });
+    bars += `<rect x="${leftPad}" y="${y}" width="${usableW}" height="${rowH}" rx="4" fill="none" stroke="#E4DDD0" stroke-width="1"></rect>`;
+    bars += `<text x="${leftPad-10}" y="${y+rowH/2+5}" text-anchor="end" font-size="12.5" fill="#233238" font-weight="600">${DOMAINS[d]}</text>`;
+  });
+  return `<svg viewBox="0 0 ${chartW} ${svgH}" xmlns="http://www.w3.org/2000/svg" width="100%" style="max-width:${chartW}px;font-family:Segoe UI,Tahoma,Arial,sans-serif;">
+    <rect x="0" y="0" width="${chartW}" height="${svgH}" fill="#ffffff"/>
+    ${bars}
+  </svg>`;
+}
+
+function renderCharts(filtered, stats){
+  const mWrap = document.getElementById('masterySummaryChart');
+  const qWrap = document.getElementById('questionsChart');
+  const sWrap = document.getElementById('scoreDistChart');
+  if(!qWrap || !sWrap) return;
+
+  if(mWrap) mWrap.innerHTML = buildMasterySummarySVG(stats, filtered.length);
+  qWrap.innerHTML = buildQuestionsChartSVG(filtered);
+  sWrap.innerHTML = buildScoreDistSVG(filtered);
+
+  const dlM = document.getElementById('dlMasteryChart');
+  const dlQ = document.getElementById('dlQuestionsChart');
+  const dlS = document.getElementById('dlScoreChart');
+  const mSvg = mWrap ? mWrap.querySelector('svg') : null;
+  const qSvg = qWrap.querySelector('svg');
+  const sSvg = sWrap.querySelector('svg');
+  if(dlM && mSvg) dlM.onclick = () => svgToPngDownload(mSvg, 'نظرة_شاملة_التمكن', '#ffffff');
+  if(dlQ){ if(qSvg){ dlQ.classList.remove('hidden'); dlQ.onclick = () => svgToPngDownload(qSvg, 'أضعف_الأسئلة', '#ffffff'); } else { dlQ.classList.add('hidden'); } }
+  if(dlS && sSvg) dlS.onclick = () => svgToPngDownload(sSvg, 'توزيع_الدرجات', '#ffffff');
+}
+
+function bindTeacherEvents(){
+  document.getElementById('logoutBtn').addEventListener('click', () => showOnly(startScreen));
+  const printBtn = document.getElementById('printBtn');
+  if(printBtn) printBtn.addEventListener('click', () => window.print());
+  const refreshBtn = document.getElementById('refreshBtn');
+  if(refreshBtn) refreshBtn.addEventListener('click', async () => {
+    refreshBtn.disabled = true;
+    refreshBtn.textContent = 'جارٍ التحديث...';
+    await loadAllRecords();
+    renderTeacherDash();
+  });
+  const deleteAllBtn = document.getElementById('deleteAllBtn');
+  if(deleteAllBtn){
+    let confirmingAll = false;
+    let confirmAllTimeout = null;
+    deleteAllBtn.addEventListener('click', async () => {
+      const scope = currentClassFilter === 'all' ? 'كل الفصول' : currentClassFilter;
+      if(!confirmingAll){
+        confirmingAll = true;
+        deleteAllBtn.textContent = `متأكدة؟ اضغطي مرة ثانية للتأكيد (${scope})`;
+        confirmAllTimeout = setTimeout(() => {
+          confirmingAll = false;
+          deleteAllBtn.textContent = '🗑️ حذف كل النتائج';
+        }, 4000);
+        return;
+      }
+      clearTimeout(confirmAllTimeout);
+      deleteAllBtn.disabled = true;
+      deleteAllBtn.textContent = 'جارٍ الحذف...';
+      try{
+        const delUrl = currentClassFilter === 'all'
+          ? `${SHEETS_API_URL}?action=deleteAll`
+          : `${SHEETS_API_URL}?action=deleteAll&className=${encodeURIComponent(currentClassFilter)}`;
+        await fetch(delUrl);
+      }catch(e){ console.error('تعذر حذف الكل', e); }
+      await loadAllRecords();
+      renderTeacherDash();
+    });
+  }
+  document.querySelectorAll('.delete-row-btn').forEach(btn => {
+    let confirming = false;
+    let confirmTimeout = null;
+    const originalLabel = btn.textContent;
+    btn.addEventListener('click', async () => {
+      const key = btn.dataset.key;
+      if(!key) return;
+      if(!confirming){
+        confirming = true;
+        btn.textContent = 'تأكيد؟';
+        confirmTimeout = setTimeout(() => {
+          confirming = false;
+          btn.textContent = originalLabel;
+        }, 3000);
+        return;
+      }
+      clearTimeout(confirmTimeout);
+      btn.disabled = true;
+      btn.textContent = '...';
+      try{ await fetch(`${SHEETS_API_URL}?action=delete&key=${encodeURIComponent(key)}`); }catch(e){ console.error('تعذر حذف', key, e); }
+      await loadAllRecords();
+      renderTeacherDash();
+    });
+  });
+  document.querySelectorAll('.class-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentClassFilter = tab.dataset.cls;
+      renderTeacherDash();
+    });
+  });
+}
+</script>
+</body>
+</html>
