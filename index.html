@@ -542,12 +542,38 @@ function showResults(record){
   });
 }
 
+function normalizeRecord(r){
+  const safe = {
+    name: r.name || 'بدون اسم',
+    className: r.className || 'غير محدد',
+    score: Number(r.score) || 0,
+    total: Number(r.total) || QUESTIONS.length,
+    answers: Array.isArray(r.answers) ? r.answers : new Array(QUESTIONS.length).fill(null),
+    timestamp: r.timestamp || new Date().toISOString(),
+    _storageKey: r._storageKey || ''
+  };
+  safe.domainStats = {};
+  Object.keys(DOMAINS).forEach(d => {
+    const existing = (r.domainStats && r.domainStats[d]) ? r.domainStats[d] : null;
+    safe.domainStats[d] = {
+      c: (existing && Number(existing.c) >= 0) ? Number(existing.c) : 0,
+      t: (existing && Number(existing.t) > 0) ? Number(existing.t) : 1
+    };
+  });
+  return safe;
+}
+
 async function loadAllRecords(){
   allRecordsCache = [];
   try{
     const res = await fetch(SHEETS_API_URL);
     const data = await res.json();
-    if(data && data.ok && data.records) allRecordsCache = data.records;
+    if(data && data.ok && data.records){
+      allRecordsCache = data.records.map(r => {
+        try{ return normalizeRecord(r); }
+        catch(e){ console.error('سجل تالف تم تجاوزه', r, e); return null; }
+      }).filter(r => r !== null);
+    }
   }catch(e){
     console.error('تعذر تحميل النتائج', e);
   }
@@ -591,6 +617,23 @@ function computeStats(records){
 }
 
 function renderTeacherDash(){
+  try{
+    renderTeacherDashInner();
+  }catch(err){
+    console.error('خطأ في عرض لوحة المعلمة', err);
+    teacherDash.innerHTML = `
+      <div class="top-actions"><span style="font-weight:700;font-size:16px;color:var(--rose);">حدث خطأ غير متوقع بعرض اللوحة</span><button id="logoutBtn">تسجيل خروج</button></div>
+      <button class="print-btn" id="refreshBtn" style="background:var(--teal);margin-bottom:14px;">🔄 إعادة المحاولة</button>
+      <div class="empty" style="text-align:right;direction:ltr;font-family:monospace;font-size:11px;color:var(--rose);">${(err && err.message) || err}</div>
+    `;
+    const logoutBtn2 = document.getElementById('logoutBtn');
+    if(logoutBtn2) logoutBtn2.addEventListener('click', () => showOnly(startScreen));
+    const refreshBtn2 = document.getElementById('refreshBtn');
+    if(refreshBtn2) refreshBtn2.addEventListener('click', async () => { await loadAllRecords(); renderTeacherDash(); });
+  }
+}
+
+function renderTeacherDashInner(){
   if(allRecordsCache.length === 0){
     teacherDash.innerHTML = `
       <div class="top-actions"><span style="font-weight:700;font-size:16px;color:var(--teal-dark);">لوحة المعلمة</span><button id="logoutBtn">تسجيل خروج</button></div>
